@@ -3,11 +3,15 @@
 # todo
 
 hostIP = "192.168.1.120"
+increment = 1
 
 import pygame
+import sys
 import socket
 import urllib
 import urllib2
+
+pygame.init()
 
 #make window for dispaying sent command
 screenWidth = 400
@@ -16,22 +20,11 @@ screen = pygame.display.set_mode((screenWidth, screenHeight))
 background_color = (0,0,0)
 screen.fill(background_color)
 pygame.display.flip()
-pygame.display.set_caption("Smoothie PC Control")
-
-#intialize joystick module
-pygame.joystick.init()
-joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-print joysticks
-
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
-print joystick.get_name()
+pygame.display.set_caption("Smoothie Xbox Control")
 
 def sendCommand(command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
-
-    print hostIP
 
     url = "http://" + hostIP + "/command_silent"
 
@@ -60,10 +53,46 @@ def setText(message):
     screen.blit(messageText, ((screenWidth/2) - messageText.get_width() // 2, (screenHeight/2) - messageText.get_height() // 2))
     pygame.display.flip()
 
+def checkAxes():
+    x = 3
+    y = 4
+    z = 1
+
+    xPos = controller.get_axis(x)
+    yPos = controller.get_axis(y)
+    zPos = controller.get_axis(z)
+
+    if xPos != 0:
+        setText("X moved")
+    elif yPos != 0:
+        setText("Y moved")
+    elif zPos != 0:
+        setText("Z moved")
+    else:
+        setText("let's do this")
+
+#intialize joystick module
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+print len(joysticks)
+
+#quit if no controller detected
+if(len(joysticks) < 1):
+    sys.exit("Controller not connected")
+
+controller = pygame.joystick.Joystick(0)
+controller.init()
+print controller.get_name()
+
 setText("let's do this")
+
+print controller.get_numaxes()
 
 running = True
 while running:
+
+    checkAxes()
+
     #continue running until user specifies quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
