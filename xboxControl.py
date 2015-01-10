@@ -58,9 +58,14 @@ def checkAxes():
     y = 4
     z = 1
 
+    leftTriggerAxis = 2
+    rightTriggerAxis = 5
+
     xPos = controller.get_axis(x)
     yPos = controller.get_axis(y)
     zPos = controller.get_axis(z)
+    leftTrigger = controller.get_axis(leftTriggerAxis)
+    rightTrigger = controller.get_axis(rightTriggerAxis)
 
     if xPos != 0:
         setText("X moved")
@@ -68,6 +73,52 @@ def checkAxes():
         setText("Y moved")
     elif zPos != 0:
         setText("Z moved")
+    elif leftTrigger > 0:
+        setText("Left Trigger")
+    elif rightTrigger > 0:
+        setText("right trigger")
+    else:
+        setText("let's do this")
+
+def checkButtons():
+    tenth = 0
+    one = 1
+    ten = 2
+    hundred = 3
+    leftBumper = 4
+    rightBumper = 5
+    back = 6
+    select = 7
+    xboxButton = 8
+    leftAnalogClick = 9
+    rightAnalogClick = 10
+
+    if controller.get_button(tenth):
+        setText("increment: 0.1")
+        increment = 0.1
+    elif controller.get_button(one):
+        setText("increment: 1")
+        increment = 1
+    elif controller.get_button(ten):
+        setText("increment: 10")
+        increment = 10
+    elif controller.get_button(hundred):
+        setText("increment: 100")
+        increment = 100
+    elif controller.get_button(leftBumper):
+        setText("left bumper")
+    elif controller.get_button(rightBumper):
+        setText("right bumper")
+    elif controller.get_button(back):
+        setText("back")
+    elif controller.get_button(select):
+        setText("select")
+    elif controller.get_button(leftAnalogClick):
+        setText("right analog stick")
+    elif controller.get_button(rightAnalogClick):
+        setText("left analog click")
+    elif controller.get_button(xboxButton):
+        setText("xbox button")
     else:
         setText("let's do this")
 
@@ -87,11 +138,13 @@ print controller.get_name()
 setText("let's do this")
 
 print controller.get_numaxes()
+print controller.get_numbuttons()
 
 running = True
 while running:
 
     checkAxes()
+    checkButtons()
 
     #continue running until user specifies quit
     for event in pygame.event.get():
