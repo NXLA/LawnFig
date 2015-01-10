@@ -1,8 +1,9 @@
-#control your SmoothieBoard powered device with your keyboard
+#control your OctoPrint powered printer with your Xbox controller
 
 # todo
 
-hostIP = "192.168.1.120"
+hostIP = "192.168.1.122"
+apiKey = "25A1AE457F3E4ACF854B80A51BA51776"
 increment = 1
 
 import pygame
@@ -22,24 +23,31 @@ screen.fill(background_color)
 pygame.display.flip()
 pygame.display.set_caption("Smoothie Xbox Control")
 
-def sendCommand(command):
+def sendCommand(axis, command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
-    url = "http://" + hostIP + "/command_silent"
+    url = "http://" + hostIP + "/api/printer/printhead"
 
-    content_type = "application/x-www-form-urlencoded; charset=UTF-8"
+    content_type = "application/json"
 
     body = []
-    body = [command]
+
+    if command == "home":
+        body = ['{"command":"home","axes":["x","y"]}']
+    elif command == "jog":
+        body = ['{"command":"jog","%s":%s}' % (axis, increment)]
+    elif command == "-jog":
+        body = ['{"command":"jog","%s":-%s}' % (axis, increment)]
 
     body = '\r\n'.join(body)
 
     req = urllib2.Request(url)
 
-    req.add_header('User-agent', 'Smoothie PC Control')
+    req.add_header('User-agent', 'OctoXbox Control')
     req.add_header('Content-type', content_type)
     req.add_header('Content-length', len(body))
+    req.add_header('X-Api-Key', apiKey)
     req.add_data(body)
 
     print urllib2.urlopen(req).read()
@@ -53,6 +61,7 @@ def setText(message):
     screen.blit(messageText, ((screenWidth/2) - messageText.get_width() // 2, (screenHeight/2) - messageText.get_height() // 2))
     pygame.display.flip()
 
+#check if the triggers or analog sticks are moved
 def checkAxes():
     x = 3
     y = 4
@@ -69,17 +78,32 @@ def checkAxes():
 
     if xPos != 0:
         setText("X moved")
+        if xPos > 0:
+            sendCommand("x", "jog")
+        else:
+            sendCommand("x", "-jog")
     elif yPos != 0:
         setText("Y moved")
+        if yPos > 0:
+            sendCommand("y", "jog")
+        else:
+            sendCommand("y", "-jog")
     elif zPos != 0:
         setText("Z moved")
+        if zPos > 0:
+            sendCommand("z", "jog")
+        else:
+            sendCommand("z", "-jog")
     elif leftTrigger > 0:
         setText("Left Trigger")
+        #retract
     elif rightTrigger > 0:
         setText("right trigger")
-    else:
-        setText("let's do this")
+        #extrude
+    # else:
+    #     setText("let's do this")
 
+#check if buttons are pressed
 def checkButtons():
     tenth = 0
     one = 1
@@ -89,9 +113,9 @@ def checkButtons():
     rightBumper = 5
     back = 6
     select = 7
-    xboxButton = 8
     leftAnalogClick = 9
     rightAnalogClick = 10
+    xboxButton = 8
 
     if controller.get_button(tenth):
         setText("increment: 0.1")
@@ -107,18 +131,23 @@ def checkButtons():
         increment = 100
     elif controller.get_button(leftBumper):
         setText("left bumper")
+        sendCommand(["z"], "home")
     elif controller.get_button(rightBumper):
         setText("right bumper")
+        sendCommand(["x", "y"], "home")
     elif controller.get_button(back):
         setText("back")
+        #cycle through printers
     elif controller.get_button(select):
         setText("select")
+        #cycle through printers
     elif controller.get_button(leftAnalogClick):
         setText("right analog stick")
     elif controller.get_button(rightAnalogClick):
         setText("left analog click")
     elif controller.get_button(xboxButton):
         setText("xbox button")
+        sys.exit("quit")
     else:
         setText("let's do this")
 
