@@ -2,9 +2,10 @@
 
 # todo
 
-hostIP = "192.168.1.122"
-apiKey = "25A1AE457F3E4ACF854B80A51BA51776"
+hostIP = ["192.168.1.122"]
+apiKey = ["25A1AE457F3E4ACF854B80A51BA51776"]
 increment = 1
+#global increment
 
 import pygame
 import sys
@@ -27,7 +28,7 @@ def sendCommand(axis, command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
-    url = "http://" + hostIP + "/api/printer/printhead"
+    url = "http://" + hostIP[0] + "/api/printer/printhead"
 
     content_type = "application/json"
 
@@ -47,7 +48,7 @@ def sendCommand(axis, command):
     req.add_header('User-agent', 'OctoXbox Control')
     req.add_header('Content-type', content_type)
     req.add_header('Content-length', len(body))
-    req.add_header('X-Api-Key', apiKey)
+    req.add_header('X-Api-Key', apiKey[0])
     req.add_data(body)
 
     print urllib2.urlopen(req).read()
@@ -85,15 +86,15 @@ def checkAxes():
     elif yPos != 0:
         setText("Y moved")
         if yPos > 0:
-            sendCommand("y", "jog")
-        else:
             sendCommand("y", "-jog")
+        else:
+            sendCommand("y", "jog")
     elif zPos != 0:
         setText("Z moved")
         if zPos > 0:
-            sendCommand("z", "jog")
-        else:
             sendCommand("z", "-jog")
+        else:
+            sendCommand("z", "jog")
     elif leftTrigger > 0:
         setText("Left Trigger")
         #retract
@@ -116,6 +117,8 @@ def checkButtons():
     leftAnalogClick = 9
     rightAnalogClick = 10
     xboxButton = 8
+
+    global increment
 
     if controller.get_button(tenth):
         setText("increment: 0.1")
@@ -174,6 +177,8 @@ while running:
 
     checkAxes()
     checkButtons()
+
+    print increment
 
     #continue running until user specifies quit
     for event in pygame.event.get():
