@@ -34,7 +34,7 @@ def sendCommand(axis, command):
     body = []
 
     if command == "home":
-        body = ['{"command":"home","axes":["x","y"]}']
+        body = ['{"command":"home","axes":%s}' % axis]
     elif command == "jog":
         body = ['{"command":"jog","%s":%s}' % (axis, increment)]
     elif command == "-jog":
