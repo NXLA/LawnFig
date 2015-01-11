@@ -2,10 +2,12 @@
 
 # todo
 
-hostIP = ["192.168.1.122"]
-apiKey = ["25A1AE457F3E4ACF854B80A51BA51776"]
+#enter your OctoPrint info here
+hostIP = ["192.168.1.122", "prusa.local"]
+apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "156A8AE4000940CFB3C51C9DFD812D8A"]
+
 increment = 1
-#global increment
+printerIndex = 0
 
 import pygame
 import sys
@@ -28,8 +30,8 @@ def sendCommand(axis, command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
-    url = "http://" + hostIP[0] + "/api/printer/printhead"
-
+    url = "http://" + hostIP[printerIndex] + "/api/printer/printhead"
+    print printerIndex
     content_type = "application/json"
 
     body = []
@@ -48,7 +50,7 @@ def sendCommand(axis, command):
     req.add_header('User-agent', 'OctoXbox Control')
     req.add_header('Content-type', content_type)
     req.add_header('Content-length', len(body))
-    req.add_header('X-Api-Key', apiKey[0])
+    req.add_header('X-Api-Key', apiKey[printerIndex])
     req.add_data(body)
 
     print urllib2.urlopen(req).read()
@@ -119,6 +121,7 @@ def checkButtons():
     xboxButton = 8
 
     global increment
+    global printerIndex
 
     if controller.get_button(tenth):
         setText("increment: 0.1")
@@ -139,11 +142,22 @@ def checkButtons():
         setText("right bumper")
         sendCommand('["x", "y"]', "home")
     elif controller.get_button(back):
-        setText("back")
-        #cycle through printers
+        if len(hostIP) > 1:
+            if len(hostIP) == len(apiKey):
+                if printerIndex > 0:
+                    printerIndex -= 1
+                    setText(hostIP[printerIndex])
+                else:
+                    printerIndex = len(hostIP) - 1
     elif controller.get_button(select):
-        setText("select")
         #cycle through printers
+        if len(hostIP) > 1:
+            if len(hostIP) == len(apiKey):
+                if printerIndex < (len(hostIP)-1):
+                    printerIndex += 1
+                    setText(hostIP[printerIndex])
+                else:
+                    printerIndex = 0
     elif controller.get_button(leftAnalogClick):
         setText("right analog stick")
     elif controller.get_button(rightAnalogClick):
@@ -174,11 +188,10 @@ print controller.get_numbuttons()
 
 running = True
 while running:
-
     checkAxes()
     checkButtons()
 
-    print increment
+    pygame.time.wait(100)
 
     #continue running until user specifies quit
     for event in pygame.event.get():
