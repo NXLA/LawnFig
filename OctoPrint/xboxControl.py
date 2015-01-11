@@ -131,10 +131,10 @@ def checkButtons():
         increment = 100
     elif controller.get_button(leftBumper):
         setText("left bumper")
-        sendCommand("["z"]", "home")
+        sendCommand('["z"]', "home")
     elif controller.get_button(rightBumper):
         setText("right bumper")
-        sendCommand("["x", "y"]", "home")
+        sendCommand('["x", "y"]', "home")
     elif controller.get_button(back):
         setText("back")
         #cycle through printers
