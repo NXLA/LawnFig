@@ -80,7 +80,7 @@ def sendSmoothieCommand(command):
 
         url = "http://" + hostIP[printerIndex] + "/command"
         print printerIndex
-        content_type = "application/json"
+        content_type = "application/x-www-form-urlencoded"
 
         body = []
         body =  command + "\n:"
