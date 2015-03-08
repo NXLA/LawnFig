@@ -2,8 +2,7 @@
 
 # TODO
 # sensitivity setting
-# txt with controls
-# feedrate setting
+# txt with controls explanation
 
 # ---------------------------------------------------------------------------------------------
 # USER CONFIGURABLE INFO
@@ -32,6 +31,10 @@ startPrinterIndex = 0 # should be 0 if you only have one printer
 
 # enter how often you would like to check for new input (milliseconds)
 refresh_rate = 150
+
+#feedrate settings
+xyFeedrate = 3000
+zFeedrate = 200
 # ---------------------------------------------------------------------------------------------
 
 if(default_increment == jogging_increments[0] or default_increment == jogging_increments[1] or default_increment == jogging_increments[2] or default_increment == jogging_increments[3]):
@@ -135,21 +138,21 @@ def checkAxes():
     if xPos != 0:
         setText("X moved")
         if xPos > 0:
-            sendCommand("G91 G0 X" + increment + " G90")
+            sendCommand("G91 G0 X" + increment + " F" + xyFeedrate + " G90")
         else:
-            sendCommand("G91 G0 X-" + increment + " G90")
+            sendCommand("G91 G0 X-" + increment + " F" + xyFeedrate + " G90")
     elif yPos != 0:
         setText("Y moved")
         if yPos > 0:
-            sendCommand("G91 G0 Y-" + increment + " G90")
+            sendCommand("G91 G0 Y-" + increment + " F" + xyFeedrate + " G90")
         else:
-            sendCommand("G91 G0 Y" + increment + " G90")
+            sendCommand("G91 G0 Y" + increment + " F" + xyFeedrate + " G90")
     elif zPos != 0:
         setText("Z moved")
         if zPos > 0:
-            sendCommand("G91 G0 Z-" + increment + " G90")
+            sendCommand("G91 G0 Z-" + increment + " F" + zFeedrate + " G90")
         else:
-            sendCommand("G91 G0 Z" + increment + " G90")
+            sendCommand("G91 G0 Z" + increment + " F" + zFeedrate + " G90")
     elif leftTrigger > 0:
         setText("Left Trigger")
         #retract
