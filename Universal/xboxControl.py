@@ -2,8 +2,17 @@
 
 # todo
 
-#enter your OctoPrint info here
-hostIP = ["192.168.1.122"]
+
+# ---------------------------------------------------------------------------------------------
+# USER CONFIGURABLE INFO
+
+# list the IPs of your smoothie or octoprint printers
+hostIP = ["192.168.1.122", "prusa.local", "pb.local"]
+
+# enter your OctoPrint apikeys here - they must match the index of the list of IPs above
+# if it is smoothie the value should be "smoothie"
+apiKey = ["smoothie", "156A8AE4000940CFB3C51C9DFD812D8A", "25A1AE457F3E4ACF854B80A51BA51776"]
+# ---------------------------------------------------------------------------------------------
 
 increment = 1
 printerIndex = 0
