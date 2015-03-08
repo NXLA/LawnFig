@@ -23,7 +23,7 @@ apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51
 default_increment = 1
 
 # enter how often you would like to check for new input (milliseconds)
-refresh_rate = 200
+refresh_rate = 150
 # ---------------------------------------------------------------------------------------------
 
 if(default_increment == 0.1 or default_increment == 1 or default_increment == 10 or default_increment == 100):
@@ -53,36 +53,6 @@ pygame.display.flip()
 __version__ = "0.1"
 pygame.display.set_caption("Universal Xbox Printer Control v" + __version__)
 
-# def sendOctoPrintCommand(axis, command):
-#     timeout = 15
-#     socket.setdefaulttimeout(timeout)
-#
-#     url = "http://" + hostIP[printerIndex] + "/api/printer/printhead"
-#     print printerIndex
-#     content_type = "application/json"
-#
-#     body = []
-#
-#     if command == "home":
-#         body = ['{"command":"home","axes":%s}' % axis]
-#     elif command == "jog":
-#         body = ['{"command":"jog","%s":%s}' % (axis, increment)]
-#     elif command == "-jog":
-#         body = ['{"command":"jog","%s":-%s}' % (axis, increment)]
-#
-#     body = '\r\n'.join(body)
-#
-#     req = urllib2.Request(url)
-#
-#     req.add_header('User-agent', 'OctoXbox Control')
-#     req.add_header('Content-type', content_type)
-#     req.add_header('Content-length', len(body))
-#     req.add_header('X-Api-Key', apiKey[printerIndex])
-#     req.add_data(body)
-#
-#     print urllib2.urlopen(req).read()
-
-
 def sendOctoPrintCommand(command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
@@ -92,11 +62,6 @@ def sendOctoPrintCommand(command):
     content_type = "application/json"
 
     body = []
-
-    body = '{\"command\": \"' + command + '\"}'
-
-    #body = '\r\n'.join(body)
-
     body =  '{\"command\": \"' + command + '\"}' + '\r\n'
 
     req = urllib2.Request(url)
@@ -108,6 +73,26 @@ def sendOctoPrintCommand(command):
     req.add_data(body)
 
     print urllib2.urlopen(req).read()
+
+def sendSmoothieCommand(command):
+        timeout = 15
+        socket.setdefaulttimeout(timeout)
+
+        url = "http://" + hostIP[printerIndex] + "/command"
+        print printerIndex
+        content_type = "application/json"
+
+        body = []
+        body =  command + "\n:"
+
+        req = urllib2.Request(url)
+
+        req.add_header('User-agent', 'Xbox Printer Controller')
+        req.add_header('Content-type', content_type)
+        req.add_header('Content-length', len(body))
+        req.add_data(body)
+
+        print urllib2.urlopen(req).read()
 
 def sendCommand(command):
     sendOctoPrintCommand(command)
