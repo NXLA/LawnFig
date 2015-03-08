@@ -1,8 +1,6 @@
 #control your OctoPrint powered printer with your Xbox controller
 
 # TODO
-# user configurable increments
-# separate setting for port
 # sensitivity setting
 # txt with controls
 # feedrate setting
@@ -11,14 +9,18 @@
 # USER CONFIGURABLE INFO
 
 # list the IPs of your smoothie or octoprint printers
-# include the port (example: 192.168.1.1:5000)
 hostIP = ["pb.local", "192.168.1.122", "prusa.local"]
+
+# port
+# must be the same number of ports as IPs
+hostPort = ["80", "80", "80"]
 
 # enter your OctoPrint apikeys here - they must match the index of the list of IPs above
 # if it is smoothie the value should be "smoothie"
 apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51C9DFD812D8A"]
 
 # set the four jogging increments you would like (in mm)
+# must be four increments
 jogging_increments = [0.1, 1, 10, 100]
 
 # enter your preferred default jogging increment
@@ -63,7 +65,7 @@ def sendOctoPrintCommand(command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
-    url = "http://" + hostIP[printerIndex] + "/api/printer/command"
+    url = "http://" + hostIP[printerIndex] + ":" + hostPort[printerIndex] + "/api/printer/command"
     print printerIndex
     content_type = "application/json"
 
@@ -84,7 +86,7 @@ def sendSmoothieCommand(command):
         timeout = 15
         socket.setdefaulttimeout(timeout)
 
-        url = "http://" + hostIP[printerIndex] + "/command"
+        url = "http://" + hostIP[printerIndex] + ":" + hostPort[printerIndex] + "/command"
         print printerIndex
         content_type = "application/x-www-form-urlencoded"
 
