@@ -2,23 +2,31 @@
 
 # todo
 # user configurable increments
+# separate setting for port
+# sensitivity setting
+# txt with controls
+# feedrate setting
 
 # ---------------------------------------------------------------------------------------------
 # USER CONFIGURABLE INFO
 
 # list the IPs of your smoothie or octoprint printers
-hostIP = ["192.168.1.122", "prusa.local", "pb.local"]
+# include the port (example: 192.168.1.1:5000)
+hostIP = ["pb.local", "192.168.1.122", "prusa.local"]
 
 # enter your OctoPrint apikeys here - they must match the index of the list of IPs above
 # if it is smoothie the value should be "smoothie"
-apiKey = ["smoothie", "156A8AE4000940CFB3C51C9DFD812D8A", "25A1AE457F3E4ACF854B80A51BA51776"]
+apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51C9DFD812D8A"]
 
 # enter your preferred default jogging increment
 # must be one of the following: 0.1, 1, 10, 100
 default_increment = 1
+
+# enter how often you would like to check for new input (milliseconds)
+refresh_rate = 200
 # ---------------------------------------------------------------------------------------------
 
-if(default_increment == 1):
+if(default_increment == 0.1 or default_increment == 1 or default_increment == 10 or default_increment == 100):
     increment = default_increment
 else:
     increment = 1
@@ -45,28 +53,55 @@ pygame.display.flip()
 __version__ = "0.1"
 pygame.display.set_caption("Universal Xbox Printer Control v" + __version__)
 
-def sendOctoPrintCommand(axis, command):
+# def sendOctoPrintCommand(axis, command):
+#     timeout = 15
+#     socket.setdefaulttimeout(timeout)
+#
+#     url = "http://" + hostIP[printerIndex] + "/api/printer/printhead"
+#     print printerIndex
+#     content_type = "application/json"
+#
+#     body = []
+#
+#     if command == "home":
+#         body = ['{"command":"home","axes":%s}' % axis]
+#     elif command == "jog":
+#         body = ['{"command":"jog","%s":%s}' % (axis, increment)]
+#     elif command == "-jog":
+#         body = ['{"command":"jog","%s":-%s}' % (axis, increment)]
+#
+#     body = '\r\n'.join(body)
+#
+#     req = urllib2.Request(url)
+#
+#     req.add_header('User-agent', 'OctoXbox Control')
+#     req.add_header('Content-type', content_type)
+#     req.add_header('Content-length', len(body))
+#     req.add_header('X-Api-Key', apiKey[printerIndex])
+#     req.add_data(body)
+#
+#     print urllib2.urlopen(req).read()
+
+
+def sendOctoPrintCommand(command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
-    url = "http://" + hostIP[printerIndex] + "/api/printer/printhead"
+    url = "http://" + hostIP[printerIndex] + "/api/printer/command"
     print printerIndex
     content_type = "application/json"
 
     body = []
 
-    if command == "home":
-        body = ['{"command":"home","axes":%s}' % axis]
-    elif command == "jog":
-        body = ['{"command":"jog","%s":%s}' % (axis, increment)]
-    elif command == "-jog":
-        body = ['{"command":"jog","%s":-%s}' % (axis, increment)]
+    body = '{\"command\": \"' + command + '\"}'
 
-    body = '\r\n'.join(body)
+    #body = '\r\n'.join(body)
+
+    body =  '{\"command\": \"' + command + '\"}' + '\r\n'
 
     req = urllib2.Request(url)
 
-    req.add_header('User-agent', 'OctoXbox Control')
+    req.add_header('User-agent', 'Xbox Printer Controller')
     req.add_header('Content-type', content_type)
     req.add_header('Content-length', len(body))
     req.add_header('X-Api-Key', apiKey[printerIndex])
@@ -74,8 +109,8 @@ def sendOctoPrintCommand(axis, command):
 
     print urllib2.urlopen(req).read()
 
-def sendCommand(axis, command):
-    sendOctoPrintCommand(axis, command)
+def sendCommand(command):
+    sendOctoPrintCommand(command)
 
 #function for clearing and setting screen text
 def setText(message):
@@ -104,21 +139,23 @@ def checkAxes():
     if xPos != 0:
         setText("X moved")
         if xPos > 0:
-            sendCommand("x", "jog")
+            # move X forward
+            sendCommand("")
+            sendCommand("G91 G0 X" + increment + " G90")
         else:
-            sendCommand("x", "-jog")
+            sendCommand("G91 G0 X-" + increment + " G90")
     elif yPos != 0:
         setText("Y moved")
         if yPos > 0:
-            sendCommand("y", "-jog")
+            sendCommand("G91 G0 Y-" + increment + " G90")
         else:
-            sendCommand("y", "jog")
+            sendCommand("G91 G0 Y" + increment + " G90")
     elif zPos != 0:
         setText("Z moved")
         if zPos > 0:
-            sendCommand("z", "-jog")
+            sendCommand("G91 G0 Z-" + increment + " G90")
         else:
-            sendCommand("z", "jog")
+            sendCommand("G91 G0 Z" + increment + " G90")
     elif leftTrigger > 0:
         setText("Left Trigger")
         #retract
@@ -159,10 +196,10 @@ def checkButtons():
         increment = 100
     elif controller.get_button(leftBumper):
         setText("left bumper")
-        sendCommand('["z"]', "home")
+        sendCommand("G28 Z")
     elif controller.get_button(rightBumper):
         setText("right bumper")
-        sendCommand('["x", "y"]', "home")
+        sendCommand("G28 XY")
     elif controller.get_button(back):
         if len(hostIP) > 1:
             if len(hostIP) == len(apiKey):
@@ -213,7 +250,7 @@ while running:
     checkAxes()
     checkButtons()
 
-    pygame.time.wait(100)
+    pygame.time.wait(refresh_rate)
 
     #continue running until user specifies quit
     for event in pygame.event.get():
