@@ -38,6 +38,7 @@ else:
     increment = jogging_increments[1]
 
 printerIndex = startPrinterIndex
+joggingIncrement = joggingIncrements
 
 import pygame
 import sys
@@ -132,8 +133,6 @@ def checkAxes():
     if xPos != 0:
         setText("X moved")
         if xPos > 0:
-            # move X forward
-            sendCommand("")
             sendCommand("G91 G0 X" + increment + " G90")
         else:
             sendCommand("G91 G0 X-" + increment + " G90")
@@ -176,17 +175,17 @@ def checkButtons():
     global printerIndex
 
     if controller.get_button(tenth):
-        setText("increment: 0.1")
-        increment = 0.1
+        setText("increment: " + joggingIncrement[0])
+        increment = joggingIncrement[0]
     elif controller.get_button(one):
-        setText("increment: 1")
-        increment = 1
+        setText("increment: " + joggingIncrement[1])
+        increment = joggingIncrement[1]
     elif controller.get_button(ten):
-        setText("increment: 10")
-        increment = 10
+        setText("increment: " + joggingIncrement[2])
+        increment = joggingIncrement[2]
     elif controller.get_button(hundred):
-        setText("increment: 100")
-        increment = 100
+        setText("increment: " + joggingIncrement[3])
+        increment = joggingIncrement[3]
     elif controller.get_button(leftBumper):
         setText("left bumper")
         sendCommand("G28 Z")
