@@ -43,7 +43,7 @@ else:
     increment = jogging_increments[1]
 
 printerIndex = startPrinterIndex
-joggingIncrement = joggingIncrements
+joggingIncrement = jogging_increments
 
 import pygame
 import sys
