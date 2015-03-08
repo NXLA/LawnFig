@@ -82,7 +82,7 @@ def sendOctoPrintCommand(command):
     req.add_header('X-Api-Key', apiKey[printerIndex])
     req.add_data(body)
 
-    #print urllib2.urlopen(req).read()
+    print urllib2.urlopen(req).read()
 
 def sendSmoothieCommand(command):
         timeout = 15
@@ -102,7 +102,7 @@ def sendSmoothieCommand(command):
         req.add_header('Content-length', len(body))
         req.add_data(body)
 
-        #print urllib2.urlopen(req).read()
+        print urllib2.urlopen(req).read()
 
 def sendCommand(command):
     if(apiKey[printerIndex] == "smoothie"):
