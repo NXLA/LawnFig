@@ -3,6 +3,7 @@
 # TODO
 # sensitivity setting
 # txt with controls explanation
+# user configurable background and text color
 
 # ---------------------------------------------------------------------------------------------
 # USER CONFIGURABLE INFO
@@ -37,10 +38,9 @@ xyFeedrate = 3000
 zFeedrate = 200
 # ---------------------------------------------------------------------------------------------
 
+increment = jogging_increments[1]
 if(default_increment == jogging_increments[0] or default_increment == jogging_increments[1] or default_increment == jogging_increments[2] or default_increment == jogging_increments[3]):
     increment = default_increment
-else:
-    increment = jogging_increments[1]
 
 printerIndex = startPrinterIndex
 joggingIncrement = jogging_increments
@@ -69,7 +69,6 @@ def sendOctoPrintCommand(command):
     socket.setdefaulttimeout(timeout)
 
     url = "http://" + hostIP[printerIndex] + ":" + hostPort[printerIndex] + "/api/printer/command"
-    print printerIndex
     content_type = "application/json"
 
     body = []
@@ -83,14 +82,14 @@ def sendOctoPrintCommand(command):
     req.add_header('X-Api-Key', apiKey[printerIndex])
     req.add_data(body)
 
-    print urllib2.urlopen(req).read()
+    #print urllib2.urlopen(req).read()
 
 def sendSmoothieCommand(command):
         timeout = 15
         socket.setdefaulttimeout(timeout)
 
         url = "http://" + hostIP[printerIndex] + ":" + hostPort[printerIndex] + "/command"
-        print printerIndex
+
         content_type = "application/x-www-form-urlencoded"
 
         body = []
@@ -103,7 +102,7 @@ def sendSmoothieCommand(command):
         req.add_header('Content-length', len(body))
         req.add_data(body)
 
-        print urllib2.urlopen(req).read()
+        #print urllib2.urlopen(req).read()
 
 def sendCommand(command):
     if(apiKey[printerIndex] == "smoothie"):
@@ -180,16 +179,16 @@ def checkButtons():
     global printerIndex
 
     if controller.get_button(tenth):
-        setText("increment: " + joggingIncrement[0])
+        setText("increment: %d" % joggingIncrement[0])
         increment = joggingIncrement[0]
     elif controller.get_button(one):
-        setText("increment: " + joggingIncrement[1])
+        setText("increment: %d" % joggingIncrement[1])
         increment = joggingIncrement[1]
     elif controller.get_button(ten):
-        setText("increment: " + joggingIncrement[2])
+        setText("increment: %d" % joggingIncrement[2])
         increment = joggingIncrement[2]
     elif controller.get_button(hundred):
-        setText("increment: " + joggingIncrement[3])
+        setText("increment: %d" % joggingIncrement[3])
         increment = joggingIncrement[3]
     elif controller.get_button(leftBumper):
         setText("left bumper")
@@ -222,7 +221,7 @@ def checkButtons():
         setText("xbox button")
         sys.exit("quit")
     else:
-        setText("let's do this")
+        #setText("let's do this")
 
 #intialize joystick module
 pygame.joystick.init()
