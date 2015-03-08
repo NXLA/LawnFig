@@ -8,6 +8,10 @@ https://www.python.org/downloads/
 pygame
 http://www.pygame.org/download.shtml
 
+# Acknowledgements
+
+pygame
+
 # Smoothie
 You must have networking enabled in your config
 ```network.enable                               true            # enable the ethernet network services```
