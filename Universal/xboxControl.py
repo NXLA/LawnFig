@@ -18,6 +18,9 @@ hostPort = ["80", "80", "80"]
 # if it is smoothie the value should be "smoothie"
 apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51C9DFD812D8A"]
 
+# choose which printer index you want to be used on start
+startPrinterIndex = 0 # should be 0 if you only have one printer
+
 # set the four jogging increments you would like (in mm)
 # must be four increments
 jogging_increments = [0.1, 1.0, 10.0, 100.0]
@@ -26,12 +29,16 @@ jogging_increments = [0.1, 1.0, 10.0, 100.0]
 # must be one of the four you specified above in jogging_increments
 default_increment = jogging_increments[1]
 
-# choose which printer index you want to be used on start
-startPrinterIndex = 0 # should be 0 if you only have one printer
+# feedrate settings
+xy_feedrate = 3000
+z_feedrate = 200
 
-#feedrate settings
-xyFeedrate = 3000
-zFeedrate = 200
+# choose one of the following
+heat_command = "M109" # safer option - sets extruder temp nd waits for it to reach temp
+# heat_command = "M104" # sets extruder temp but does not wait
+
+# extruder temperature (in °C)
+extruder_temperature = 210
 
 # enter how often you would like to check for new input (milliseconds)
 refresh_rate = 100
@@ -49,6 +56,10 @@ printerIndex = startPrinterIndex
 joggingIncrement = jogging_increments
 maximumJoystickValue = 32768
 sensitivityCutoff = maximumJoystickValue*(sensitivity/100)
+xyFeedrate = xy_feedrate
+zFeedrate = z_feedrate
+heatCommand = heat_command
+extruderTemperature = extruder_temperature
 
 import pygame
 import sys
@@ -134,6 +145,7 @@ def checkAxes():
     x = 3
     y = 4
     z = 1
+    e = 2
 
     leftTriggerAxis = 2
     rightTriggerAxis = 5
@@ -141,6 +153,7 @@ def checkAxes():
     xPos = controller.get_axis(x)
     yPos = controller.get_axis(y)
     zPos = controller.get_axis(z)
+    ePos = controller.get_axis(e)
     leftTrigger = controller.get_axis(leftTriggerAxis)
     rightTrigger = controller.get_axis(rightTriggerAxis)
 
@@ -163,14 +176,21 @@ def checkAxes():
             sendJogCommand("G1 Z-%f F%d" % (increment, zFeedrate))
         else:
             sendJogCommand("G1 Z%f F%d" % (increment, zFeedrate))
+    elif ePos > sensitivityCutoff or ePos < sensitivityCutoff:
+        if ePos > 0:
+            setText("Extruder heating")
+            sendCommand("%s S%d" % (heatCommand, extruderTemperature))
+        else:
+            setText("Heaters off")
+            sendCommand("%s S0" % heatCommand)
     elif leftTrigger > 0:
-        setText("Left Trigger")
-        #retract
+        setText("Retract %fmm" % increment)
+        sendJogCommand("G1 E-%f" % increment)
     elif rightTrigger > 0:
-        setText("right trigger")
-        #extrude
+        setText("Extrude %fmm" % increment)
+        sendJogCommand("G1 E%f" % increment)
     # else:
-    #     setText("let's do this")
+    #     setText("Ready")
 
 #check if buttons are pressed
 def checkButtons():
@@ -232,7 +252,7 @@ def checkButtons():
         setText("xbox button")
         sys.exit("quit")
     #else:
-        #setText("let's do this")
+        #setText("Ready")
 
 
 #intialize joystick module
@@ -248,7 +268,7 @@ controller = pygame.joystick.Joystick(0)
 controller.init()
 print controller.get_name()
 
-setText("let's do this")
+setText("Ready")
 
 print controller.get_numaxes()
 print controller.get_numbuttons()
