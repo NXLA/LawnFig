@@ -1,7 +1,7 @@
 #control your OctoPrint powered printer with your Xbox controller
 
 # todo
-
+# user configurable increments
 
 # ---------------------------------------------------------------------------------------------
 # USER CONFIGURABLE INFO
@@ -12,10 +12,19 @@ hostIP = ["192.168.1.122", "prusa.local", "pb.local"]
 # enter your OctoPrint apikeys here - they must match the index of the list of IPs above
 # if it is smoothie the value should be "smoothie"
 apiKey = ["smoothie", "156A8AE4000940CFB3C51C9DFD812D8A", "25A1AE457F3E4ACF854B80A51BA51776"]
+
+# enter your preferred default jogging increment
+# must be one of the following: 0.1, 1, 10, 100
+default_increment = 1
 # ---------------------------------------------------------------------------------------------
 
-increment = 1
-printerIndex = 0
+if(default_increment == 1):
+    increment = default_increment
+else:
+    increment = 1
+
+startPrinterIndex = 0
+printerIndex = startPrinterIndex
 
 import pygame
 import sys
@@ -32,9 +41,11 @@ screen = pygame.display.set_mode((screenWidth, screenHeight))
 background_color = (0,0,0)
 screen.fill(background_color)
 pygame.display.flip()
-pygame.display.set_caption("Smoothie Xbox Control")
 
-def sendCommand(axis, command):
+__version__ = "0.1"
+pygame.display.set_caption("Universal Xbox Printer Control v" + __version__)
+
+def sendOctoPrintCommand(axis, command):
     timeout = 15
     socket.setdefaulttimeout(timeout)
 
@@ -62,6 +73,9 @@ def sendCommand(axis, command):
     req.add_data(body)
 
     print urllib2.urlopen(req).read()
+
+def sendCommand(axis, command):
+    sendOctoPrintCommand(axis, command)
 
 #function for clearing and setting screen text
 def setText(message):
@@ -183,7 +197,7 @@ print len(joysticks)
 
 #quit if no controller detected
 if(len(joysticks) < 1):
-    sys.exit("Controller not connected")
+    sys.exit("Controller not connected (or detected)")
 
 controller = pygame.joystick.Joystick(0)
 controller.init()
