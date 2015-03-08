@@ -61,7 +61,7 @@ background_color = (0,0,0)
 screen.fill(background_color)
 pygame.display.flip()
 
-__version__ = "0.1"
+__version__ = "0.2"
 pygame.display.set_caption("Universal Xbox Printer Control v" + __version__)
 
 def sendOctoPrintCommand(command):
