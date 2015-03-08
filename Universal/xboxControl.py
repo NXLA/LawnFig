@@ -220,8 +220,9 @@ def checkButtons():
     elif controller.get_button(xboxButton):
         setText("xbox button")
         sys.exit("quit")
-    else:
+    #else:
         #setText("let's do this")
+
 
 #intialize joystick module
 pygame.joystick.init()
