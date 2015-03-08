@@ -1,6 +1,6 @@
 #control your OctoPrint powered printer with your Xbox controller
 
-# todo
+# TODO
 # user configurable increments
 # separate setting for port
 # sensitivity setting
@@ -18,20 +18,25 @@ hostIP = ["pb.local", "192.168.1.122", "prusa.local"]
 # if it is smoothie the value should be "smoothie"
 apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51C9DFD812D8A"]
 
+# set the four jogging increments you would like (in mm)
+jogging_increments = [0.1, 1, 10, 100]
+
 # enter your preferred default jogging increment
-# must be one of the following: 0.1, 1, 10, 100
-default_increment = 1
+# must be one of the four you specified above in jogging_increments
+default_increment = jogging_increments[1]
+
+# choose which printer index you want to be used on start
+startPrinterIndex = 0 # should be 0 if you only have one printer
 
 # enter how often you would like to check for new input (milliseconds)
 refresh_rate = 150
 # ---------------------------------------------------------------------------------------------
 
-if(default_increment == 0.1 or default_increment == 1 or default_increment == 10 or default_increment == 100):
+if(default_increment == jogging_increments[0] or default_increment == jogging_increments[1] or default_increment == jogging_increments[2] or default_increment == jogging_increments[3]):
     increment = default_increment
 else:
-    increment = 1
+    increment = jogging_increments[1]
 
-startPrinterIndex = 0
 printerIndex = startPrinterIndex
 
 import pygame
@@ -42,7 +47,7 @@ import urllib2
 
 pygame.init()
 
-#make window for dispaying sent command
+#make window for dispaying sent commands
 screenWidth = 400
 screenHeight = 150
 screen = pygame.display.set_mode((screenWidth, screenHeight))
