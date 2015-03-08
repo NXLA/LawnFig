@@ -95,7 +95,10 @@ def sendSmoothieCommand(command):
         print urllib2.urlopen(req).read()
 
 def sendCommand(command):
-    sendOctoPrintCommand(command)
+    if(apiKey[printerIndex] == "smoothie"):
+        sendSmoothieCommand(command)
+    else:
+        sendOctoPrintCommand(command)
 
 #function for clearing and setting screen text
 def setText(message):
