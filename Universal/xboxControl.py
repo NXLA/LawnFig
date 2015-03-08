@@ -31,7 +31,7 @@ default_increment = jogging_increments[1]
 startPrinterIndex = 0 # should be 0 if you only have one printer
 
 # enter how often you would like to check for new input (milliseconds)
-refresh_rate = 150
+refresh_rate = 100
 
 #feedrate settings
 xyFeedrate = 3000
@@ -137,21 +137,21 @@ def checkAxes():
     if xPos != 0:
         setText("X moved")
         if xPos > 0:
-            sendCommand("G91 G0 X%d F%d G90" % (increment, xyFeedrate))
+            sendCommand("G91 G1 X%f F%d G90" % (increment, xyFeedrate))
         else:
-            sendCommand("G91 G0 X-%d F%d G90" % (increment, xyFeedrate))
+            sendCommand("G91 G1 X-%f F%d G90" % (increment, xyFeedrate))
     elif yPos != 0:
         setText("Y moved")
         if yPos > 0:
-            sendCommand("G91 G0 Y-%d F%d G90" % (increment, xyFeedrate))
+            sendCommand("G91 G1 Y-%f F%d G90" % (increment, xyFeedrate))
         else:
-            sendCommand("G91 G0 Y%d F%d G90" % (increment, xyFeedrate))
+            sendCommand("G91 G1 Y%f F%d G90" % (increment, xyFeedrate))
     elif zPos != 0:
         setText("Z moved")
         if zPos > 0:
-            sendCommand("G91 G0 Z-%d F%d G90" % (increment, zFeedrate))
+            sendCommand("G91 G1 Z-%f F%d G90" % (increment, zFeedrate))
         else:
-            sendCommand("G91 G0 Z%d F%d G90" % (increment, zFeedrate))
+            sendCommand("G91 G1 Z%f F%d G90" % (increment, zFeedrate))
     elif leftTrigger > 0:
         setText("Left Trigger")
         #retract
