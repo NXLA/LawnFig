@@ -37,7 +37,7 @@ z_feedrate = 200
 heat_command = "M109" # safer option - sets extruder temp nd waits for it to reach temp
 # heat_command = "M104" # sets extruder temp but does not wait
 
-# extruder temperature (in °C)
+# extruder temperature (in celsius)
 extruder_temperature = 210
 
 # enter how often you would like to check for new input (milliseconds)
