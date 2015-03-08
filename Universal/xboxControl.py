@@ -1,7 +1,6 @@
 #control your OctoPrint powered printer with your Xbox controller
 
 # TODO
-# sensitivity setting
 # txt with controls explanation
 # user configurable background and text color
 
@@ -21,7 +20,7 @@ apiKey = ["25A1AE457F3E4ACF854B80A51BA51776", "smoothie", "156A8AE4000940CFB3C51
 
 # set the four jogging increments you would like (in mm)
 # must be four increments
-jogging_increments = [0.1, 1, 10, 100]
+jogging_increments = [0.1, 1.0, 10.0, 100.0]
 
 # enter your preferred default jogging increment
 # must be one of the four you specified above in jogging_increments
@@ -78,7 +77,7 @@ def sendOctoPrintCommand(command):
     content_type = "application/json"
 
     body = []
-    body =  '{\"command\": \"' + command + '\"}' + '\r\n'
+    body =  '{\"command\": \"' + command + '\"}' + '\n\n'
 
     req = urllib2.Request(url)
 
@@ -116,6 +115,11 @@ def sendCommand(command):
     else:
         sendOctoPrintCommand(command)
 
+def sendJogCommand(jogCommand):
+    sendCommand("G91")
+    sendCommand(jogCommand)
+    sendCommand("G90")
+
 #function for clearing and setting screen text
 def setText(message):
     pygame.font.init()
@@ -144,21 +148,21 @@ def checkAxes():
         print "Cutoff: %d" % sensitivityCutoff
         setText("X moved")
         if xPos > 0:
-            sendCommand("G91 G1 X%f F%d G90" % (increment, xyFeedrate))
+            sendJogCommand("G1 X%f F%d" % (increment, xyFeedrate))
         else:
-            sendCommand("G91 G1 X-%f F%d G90" % (increment, xyFeedrate))
+            sendJogCommand("G1 X-%f F%d" % (increment, xyFeedrate))
     elif yPos > sensitivityCutoff or yPos < sensitivityCutoff:
         setText("Y moved")
         if yPos > 0:
-            sendCommand("G91 G1 Y-%f F%d G90" % (increment, xyFeedrate))
+            sendJogCommand("G1 Y-%f F%d" % (increment, xyFeedrate))
         else:
-            sendCommand("G91 G1 Y%f F%d G90" % (increment, xyFeedrate))
+            sendJogCommand("G1 Y%f F%d" % (increment, xyFeedrate))
     elif zPos > sensitivityCutoff or zPos < sensitivityCutoff:
         setText("Z moved")
         if zPos > 0:
-            sendCommand("G91 G1 Z-%f F%d G90" % (increment, zFeedrate))
+            sendJogCommand("G1 Z-%f F%d" % (increment, zFeedrate))
         else:
-            sendCommand("G91 G1 Z%f F%d G90" % (increment, zFeedrate))
+            sendJogCommand("G1 Z%f F%d" % (increment, zFeedrate))
     elif leftTrigger > 0:
         setText("Left Trigger")
         #retract
@@ -186,16 +190,16 @@ def checkButtons():
     global printerIndex
 
     if controller.get_button(tenth):
-        setText("increment: %d" % joggingIncrement[0])
+        setText("increment: %f" % joggingIncrement[0])
         increment = joggingIncrement[0]
     elif controller.get_button(one):
-        setText("increment: %d" % joggingIncrement[1])
+        setText("increment: %f" % joggingIncrement[1])
         increment = joggingIncrement[1]
     elif controller.get_button(ten):
-        setText("increment: %d" % joggingIncrement[2])
+        setText("increment: %f" % joggingIncrement[2])
         increment = joggingIncrement[2]
     elif controller.get_button(hundred):
-        setText("increment: %d" % joggingIncrement[3])
+        setText("increment: %f" % joggingIncrement[3])
         increment = joggingIncrement[3]
     elif controller.get_button(leftBumper):
         setText("left bumper")
