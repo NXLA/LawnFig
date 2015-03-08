@@ -30,12 +30,16 @@ default_increment = jogging_increments[1]
 # choose which printer index you want to be used on start
 startPrinterIndex = 0 # should be 0 if you only have one printer
 
-# enter how often you would like to check for new input (milliseconds)
-refresh_rate = 100
-
 #feedrate settings
 xyFeedrate = 3000
 zFeedrate = 200
+
+# enter how often you would like to check for new input (milliseconds)
+refresh_rate = 100
+
+# set sensitivity
+# enter a percentage without the %
+sensitivity = 50
 # ---------------------------------------------------------------------------------------------
 
 increment = jogging_increments[1]
@@ -44,6 +48,8 @@ if(default_increment == jogging_increments[0] or default_increment == jogging_in
 
 printerIndex = startPrinterIndex
 joggingIncrement = jogging_increments
+maximumJoystickValue = 32768
+sensitivityCutoff = maximumJoystickValue*(sensitivity/100)
 
 import pygame
 import sys
@@ -134,19 +140,20 @@ def checkAxes():
     leftTrigger = controller.get_axis(leftTriggerAxis)
     rightTrigger = controller.get_axis(rightTriggerAxis)
 
-    if xPos != 0:
+    if xPos > sensitivityCutoff or xPos < sensitivityCutoff:
+        print "Cutoff: %d" % sensitivityCutoff
         setText("X moved")
         if xPos > 0:
             sendCommand("G91 G1 X%f F%d G90" % (increment, xyFeedrate))
         else:
             sendCommand("G91 G1 X-%f F%d G90" % (increment, xyFeedrate))
-    elif yPos != 0:
+    elif yPos > sensitivityCutoff or yPos < sensitivityCutoff:
         setText("Y moved")
         if yPos > 0:
             sendCommand("G91 G1 Y-%f F%d G90" % (increment, xyFeedrate))
         else:
             sendCommand("G91 G1 Y%f F%d G90" % (increment, xyFeedrate))
-    elif zPos != 0:
+    elif zPos > sensitivityCutoff or zPos < sensitivityCutoff:
         setText("Z moved")
         if zPos > 0:
             sendCommand("G91 G1 Z-%f F%d G90" % (increment, zFeedrate))
