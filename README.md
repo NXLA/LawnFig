@@ -15,3 +15,7 @@ pygame
 # Smoothie
 You must have networking enabled in your config
 ```network.enable                               true            # enable the ethernet network services```
+
+# Button Map
+![Image of Button Map]
+(http://i.imgur.com/dHfCYCl.png)
