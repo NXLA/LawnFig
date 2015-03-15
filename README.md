@@ -10,12 +10,18 @@ https://www.python.org/downloads/
 pygame
 http://www.pygame.org/download.shtml
 
+# Featutes to Come
+
+* Drawing Mode - constant extrusion while the joystick is used to move the axes
+* Music Mode - records the jogging commands into a gcode file that can be played back
+
 # Acknowledgements
 
 pygame
 
 # Smoothie
 You must have networking enabled in your config
+
 ```network.enable                               true            # enable the ethernet network services```
 
 # Button Map
